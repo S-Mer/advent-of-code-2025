@@ -4,8 +4,6 @@
 
 # Find ID ranges from file by parsing on , and -
 
-# Step one: read in the text file
-
 import re
 
 with open("input.txt", "r") as file:
@@ -63,20 +61,3 @@ for id_range in id_segments:
 
 invalid_ids
 sum(invalid_ids)
-
-id_segments
-
-invalid_ids = []
-start_num = int(2214325)
-end_num = int(2229214)
-
-for num in range(start_num,end_num+1):
-    str_num = str(num)
-    for i in range(2, len(str_num)//2+1):
-        
-        # Smallest sequence would be the first two characters
-        pattern = str_num[0:i]
-        # print(f"First subset: {pattern}. Repetition would be {len(str_num) // len(pattern)}")
-        if str_num == (pattern * (len(str_num) // len(pattern))): 
-            invalid_ids.append(num)
-invalid_ids
