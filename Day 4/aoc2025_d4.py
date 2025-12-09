@@ -67,10 +67,6 @@ with open("input.txt", "r") as file:
 
 input_lines = input_file.split("\n")
 
-print(f"Total lines: {len(input_lines)}")
-print(f"First few lines: {input_lines[:3]}")
-print(f"Total @ characters: {sum(line.count('@') for line in input_lines)}")
-
 def check_neighbors(line_num, char_num):
     num_rolls = 0
 
@@ -83,69 +79,64 @@ def check_neighbors(line_num, char_num):
 
             except:
                 pass
+    
+    if num_rolls - 1 < 4:
+        print("Added ")
 
     return num_rolls - 1 # Subtract 1 because it checks itself, and this will only run when it's a roll.
-
-line_tracker = -1
-eligible_rolls = 0
-eligible_rolls_iterated = 0
-
-# Make removable list a list, not dictionary. have it store the i,j values csv'ed, and then can access them easily with a loop to update the matrix copy. then we iterate until eligible rolls is 0
-removable_set = set()
 
 # Create a live editable copy of the original matrix, and update this live as we find the rolls which can be removed at the end of a line? Otherwise use our dictionary of the removables and reset it after each full matrix run. 
 input_lines_copy = input_lines.copy()
 
-run = 1
-#
-# Where to reinitialize the line tracker and eligible rolls between runs?
+line_tracker = -1
+eligible_rolls = 0
+eligible_rolls_iterated = 0
+run = 0
+
+# Make a removable list. have it store the i,j values csv'ed, and then can access them easily with a loop to update the matrix copy. then we iterate until eligible rolls is 0
+removable_set = set()
+
 while True:
 
+    run += 1
     print(f"on run {run}")
+    
+    # for line in input_lines_copy:
+    #     print(line)
 # 
     for line in input_lines_copy:
         line_tracker += 1
 
+        print(f"Beginning line: {line_tracker}")
+
         for char in range(0, len(line)):
-            assert line[char] == "@" or line[char] == "."
+            assert line[char] == "@" or line[char] == ".", "ineligible character"
             if line[char] == "@":
                 if check_neighbors(line_tracker, char) < 4:
                     eligible_rolls += 1
                     removable_set.add(str(line_tracker) + "," + str(char))
     
-        if eligible_rolls == 0:
-            print("Iterations finished. Breaking here!")
-            break
-        else: # Add to the eligible roll counter and recreate the new input lines for the next run. Reinitialize the line tracker and eligible rolls
-            eligible_rolls_iterated += eligible_rolls
+    if eligible_rolls == 0: # If a full loop finishes and there's nothing eligible, we are done. Otherwise, we need to prune and re-run (else)
+        print("Iterations finished. Breaking here!")
+        break
+    else: # Add to the eligible roll counter and recreate the new input lines for the next run. Reinitialize the line tracker and eligible rolls
+        eligible_rolls_iterated += eligible_rolls
 
-            print(f"Finished run {run}. Added eligible rolls {eligible_rolls}")
+        # print(f"Finished run {run}. Added {eligible_rolls} eligible rolls")
 
-            # Reinitialize for next run
-            eligible_rolls = 0
-            line_tracker = -1
-            
-            run += 1
+        for roll in removable_set:
+            linenum = int(roll.split(",")[0])
+            charnum = int(roll.split(",")[1])
 
-            for roll in removable_set:
-                linenum = int(roll.split(",")[0])
-                charnum = int(roll.split(",")[1])
+            # print(f"replacing line {linenum} char {charnum}")
+            # Repopulate the new input_lines with the rolls removed
+            assert input_lines_copy[linenum][charnum] == "@", "Character was already not @"
 
-                print(f"replacing line {linenum} char {charnum}")
-                # Repopulate the new input_lines with the rolls removed
-                assert input_lines_copy[linenum][charnum] == "@", "Character was already not @"
+            input_lines_copy[linenum] = input_lines_copy[linenum][:charnum] + "." + input_lines_copy[linenum][charnum+1:] # This can't be the best way to change one character of a string
 
-                input_lines_copy[linenum] = input_lines_copy[linenum][:charnum] + "." + input_lines_copy[linenum][charnum+1:] # This can't be the best way to change one character of a string
-
-            removable_set = set()
-                
-
-eligible_rolls
+    # Reinitialize for next run
+    eligible_rolls = 0
+    line_tracker = -1
+    removable_set = set()
 
 eligible_rolls_iterated # showing 61, but we know it should be multiple thousands
-
-# len(removable_list) # actually 140x140, so the dictionary stops at 140 since it doesnt accept any other unique entries in these value ranges. it will just think i'm accessing line 140 140x rather than doing 140x140 (potential) entries
-
-# TODO: how to make it endlessly iterable until eligible_rolls is 0 at the end of a run?. make it check at the end somehow?
-
-print("foo,bar".split(","))

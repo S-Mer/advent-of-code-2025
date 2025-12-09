@@ -35,9 +35,9 @@ with open(file_name, 'r') as file:
 
 cross_0_counter
 
-#############################################
-##### Puzzle 2: Lands on 0 at any point #####
-#############################################
+###############################################
+##### Puzzle 2: Crosses on 0 at any point #####
+###############################################
 current_point = 50
 last_point = 50
 cross_0_counter = 0
